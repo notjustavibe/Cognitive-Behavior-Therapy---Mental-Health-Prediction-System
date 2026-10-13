@@ -19,14 +19,19 @@
 
 ```bash
 pip install -r requirements.txt
-
-# Both CSVs must be in the same directory as app.py:
-# - survey.csv
-# - Mental_Health_Dataset.csv
-
-python app.py
+python app.py          # first run trains the model and creates model.pkl (~3 s)
 # Open http://localhost:5000
 ```
+
+`model.pkl` (~9 MB) is created automatically on the first run. Every later run just
+loads it — the big CSVs are not read again. To retrain, delete `model.pkl` (or run
+`python train_model.py`).
+
+### Deploying (Render / PythonAnywhere)
+Commit `model.pkl` to the repo. The server then never needs the CSVs, so you can
+leave `Mental_Health_Dataset.csv` out of the deployment.
+- Render start command: `gunicorn app:app --workers 1`
+- PythonAnywhere: point the WSGI file at `from app import app as application`
 
 ### Data sources
 1. OSMI Mental Health in Tech Survey (2014) — 1,259 responses
