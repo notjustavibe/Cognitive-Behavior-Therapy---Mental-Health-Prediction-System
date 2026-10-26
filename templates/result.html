@@ -349,6 +349,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 12px;
   }
   .footer-clinic {
@@ -358,7 +359,8 @@
     color: var(--blue);
   }
   .footer-disc { font-size: 11px; color: var(--muted); line-height: 1.55; max-width: 460px; }
-  .footer-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .footer-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .report-footer > div:first-child { flex: 1 1 260px; }
   .btn-dark {
     padding: 10px 20px;
     background: var(--ink);
@@ -386,6 +388,25 @@
     display: inline-block;
   }
 
+  /* ══ EMERGENCY NUMBERS ══ */
+  .em-box { margin-top:20px; border:1.5px solid #E7B4B0; background:#FFF6F5; border-radius:var(--r); padding:18px 18px 14px; }
+  .em-title { font-family:var(--serif); font-size:18px; font-weight:700; color:#8f1e18; margin-bottom:4px; }
+  .em-note { font-size:12.5px; color:#6b3a37; line-height:1.6; margin-bottom:12px; }
+  .em-row { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:9px 0;
+            border-top:1px solid #F0D3D0; }
+  .em-name { font-size:13.5px; font-weight:600; color:var(--ink); }
+  .em-sub  { font-size:11.5px; color:var(--muted); line-height:1.5; margin-top:2px; }
+  .em-num  { font-family:var(--serif); font-size:22px; font-weight:700; color:#8f1e18; white-space:nowrap; text-decoration:none; }
+  .save-note { max-width:760px; margin:16px auto 0; padding:0 24px; font-family:var(--sans); }
+  .save-note div { border:1px solid #1A7A5A; background:#E4F3ED; color:#0E5C40; border-radius:8px; padding:11px 14px; font-size:13px; line-height:1.6; }
+  .save-note.guest div { border-color:#C5D5EE; background:#EBF0F8; color:#1E3A5F; }
+  .save-note a { color:inherit; font-weight:700; }
+  .btn-help { padding:10px 20px; background:#B3261E; color:#fff; border:none; border-radius:8px; font-family:var(--sans);
+              font-size:13px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn-help:hover { background:#8f1e18; }
+  @media (max-width:580px) { .btn-help { flex:1; text-align:center; } .em-row { flex-direction:column; align-items:flex-start; gap:4px; } }
+  @media print { .btn-help, .save-note { display:none; } }
+
   @keyframes fadeIn  { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
   @keyframes slideUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
 
@@ -397,6 +418,7 @@
     .report-footer { flex-direction: column; }
     .footer-actions { width: 100%; }
     .btn-dark, .btn-outline { flex: 1; text-align: center; }
+    .footer-actions { flex-wrap: wrap; }
     .result-card { flex-direction: column; gap: 16px; }
   }
 
@@ -408,10 +430,24 @@
 </style>
 </head>
 <body>
+{% include "_topbar.html" %}
 
 {% set c = result.overall_color %}
 {% set bg = result.overall_bg %}
 {% set r  = result.overall_risk %}
+
+<!-- ══ SAVE STATUS ══ -->
+{% if saved %}
+<div class="save-note"><div>
+  {% if past %}This is a saved report from your profile.{% else %}This report has been saved to your profile.{% endif %}
+  <a href="{{ url_for('profile') }}">View all my reports</a>
+</div></div>
+{% elif not user %}
+<div class="save-note guest"><div>
+  You are using MindCheck as a guest, so this report is not saved.
+  <a href="{{ url_for('register') }}">Create a profile</a> to keep your future reports.
+</div></div>
+{% endif %}
 
 <!-- ══ REPORT HEADER ══ -->
 <div class="report-header">
@@ -579,6 +615,22 @@
       </div>
       {% endfor %}
     </div>
+
+    {% if result.emergency %}
+    <div class="em-box">
+      <div class="em-title">Emergency &amp; support numbers — {{ result.emergency.country }}</div>
+      <div class="em-note">{{ result.emergency.note }}</div>
+      {% for e in result.emergency.numbers %}
+      <div class="em-row">
+        <div>
+          <div class="em-name">{{ e.name }}</div>
+          <div class="em-sub">{{ e.note }}</div>
+        </div>
+        <a class="em-num" href="tel:{{ e.number|replace('-','') }}">{{ e.number }}</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 
   <!-- ══ FOOTER ══ -->
@@ -593,6 +645,8 @@
     </div>
     <div class="footer-actions">
       <a href="/" class="btn-outline">← New Assessment</a>
+      {% if user %}<a href="{{ url_for('profile') }}" class="btn-outline">My profile</a>{% endif %}
+      <a href="{{ url_for('ask_help') }}" target="_blank" rel="noopener" class="btn-help">Ask for help</a>
       <button onclick="window.print()" class="btn-dark">Print / Save</button>
     </div>
   </div>

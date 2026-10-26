@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block title %}Create profile{% endblock %}
+{% block content %}
+<h1>Create your profile</h1>
+<p class="lead">Your assessment reports are saved to your profile, so you can look back at them and see your progress.</p>
+<div class="card">
+  <form method="post" action="{{ url_for('register') }}" autocomplete="on">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <p class="notice" style="margin-bottom:16px"><span style="color:#B3261E;font-weight:700">*</span> Required &nbsp;·&nbsp; <i>(optional)</i> can be skipped</p>
+
+    <label class="f" for="full_name">Full name<span class="req">*</span></label>
+    <input type="text" id="full_name" name="full_name" maxlength="80" required value="{{ form.get('full_name','') }}" autocomplete="name">
+
+    <div class="row2">
+      <div>
+        <label class="f" for="username">Username<span class="req">*</span></label>
+        <input type="text" id="username" name="username" maxlength="30" required value="{{ form.get('username','') }}" autocomplete="username">
+      </div>
+      <div></div>
+      <div>
+        <label class="f" for="password">Password<span class="req">*</span></label>
+        <input type="password" id="password" name="password" minlength="8" required autocomplete="new-password">
+      </div>
+      <div>
+        <label class="f" for="password2">Confirm password<span class="req">*</span></label>
+        <input type="password" id="password2" name="password2" minlength="8" required autocomplete="new-password">
+      </div>
+    </div>
+    <p class="hint">Username: 3-30 letters, numbers, dot, dash or underscore. Password: at least 8 characters.</p>
+
+    <div class="row2">
+      <div>
+        <label class="f" for="gender">Gender<span class="opt">(optional)</span></label>
+        <select id="gender" name="gender">
+          <option value="">Skip</option>
+          {% for x in genders %}<option {{ 'selected' if form.get('gender')==x }}>{{ x }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="f" for="age_group">Age group<span class="opt">(optional)</span></label>
+        <select id="age_group" name="age_group">
+          <option value="">Skip</option>
+          {% for x in age_groups %}<option {{ 'selected' if form.get('age_group')==x }}>{{ x }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <label class="f" for="country">Country<span class="opt">(optional)</span></label>
+    <select id="country" name="country">
+      <option value="">Skip</option>
+      {% for x in countries %}<option {{ 'selected' if form.get('country')==x }}>{{ x }}</option>{% endfor %}
+    </select>
+    <p class="hint">These optional details only pre-fill your assessment form. You can change them any time.</p>
+
+    <button class="btn wide" type="submit">Create profile</button>
+  </form>
+  <p class="small">Already have a profile? <a href="{{ url_for('login') }}">Log in</a></p>
+</div>
+<p class="notice">Your answers are sensitive, so they are stored only in this app's database file and are visible only when you are logged in to your own profile. Passwords are stored hashed, never as plain text. You can delete your profile and all its records at any time from the profile page.</p>
+{% endblock %}

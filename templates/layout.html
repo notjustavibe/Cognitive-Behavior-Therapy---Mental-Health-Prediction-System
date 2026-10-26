@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}MindCheck{% endblock %} — MindCheck</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#F4F1EC; --paper:#FDFCFA; --ink:#1C1C1A; --muted:#7A7670; --faint:#E8E4DC; --rule:#D4CFC5;
+          --teal:#1A7A5A; --teal-lt:#E4F3ED; --blue:#1E3A5F; --blue-lt:#EBF0F8;
+          --serif:'Cormorant Garamond',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif; --r:10px; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); font-family:var(--sans); color:var(--ink); min-height:100vh; padding-bottom:80px; }
+  .page { max-width:760px; margin:0 auto; padding:34px 24px 0; }
+  h1 { font-family:var(--serif); font-size:34px; color:var(--blue); letter-spacing:-.5px; line-height:1.1; margin-bottom:6px; }
+  .lead { color:var(--muted); font-size:14px; line-height:1.6; margin-bottom:24px; }
+  .card { background:var(--paper); border:1px solid var(--rule); border-radius:var(--r); padding:26px 24px;
+          box-shadow:0 1px 3px rgba(0,0,0,.04); margin-bottom:22px; }
+  .card h2 { font-family:var(--serif); font-size:21px; color:var(--ink); margin-bottom:14px; }
+  label.f { display:block; font-size:13.5px; font-weight:500; margin:0 0 5px; }
+  .f .req { color:#B3261E; font-weight:700; margin-left:3px; }
+  .f .opt { color:var(--muted); font-weight:400; font-size:12px; font-style:italic; margin-left:6px; }
+  input[type=text], input[type=password], select {
+    width:100%; padding:11px 14px; border:1.5px solid var(--rule); border-radius:8px; background:#fff;
+    font-family:var(--sans); font-size:14px; color:var(--ink); outline:none; margin-bottom:16px; }
+  input:focus, select:focus { border-color:var(--blue); }
+  .hint { font-size:12px; color:var(--muted); margin:-10px 0 16px; line-height:1.5; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:0 18px; }
+  @media (max-width:540px) { .row2 { grid-template-columns:1fr; } }
+  .btn { padding:12px 22px; background:var(--blue); color:#fff; border:none; border-radius:8px; font-family:var(--sans);
+         font-size:14px; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn:hover { background:#162D4A; }
+  .btn.wide { width:100%; padding:14px; font-size:15px; }
+  .btn.ghost { background:transparent; color:var(--ink); border:1.5px solid var(--rule); }
+  .btn.ghost:hover { border-color:var(--blue); }
+  .btn.danger { background:#B3261E; }
+  .btn.danger:hover { background:#8f1e18; }
+  .small { font-size:13px; color:var(--muted); margin-top:14px; line-height:1.6; }
+  .small a { color:var(--blue); font-weight:600; }
+  table { width:100%; border-collapse:collapse; font-size:13.5px; }
+  th { text-align:left; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); padding:0 8px 8px; }
+  td { padding:11px 8px; border-top:1px solid var(--faint); vertical-align:middle; }
+  .badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:12px; letter-spacing:.04em; display:inline-block; }
+  .tablewrap { overflow-x:auto; }
+  .acts { display:flex; gap:8px; align-items:center; justify-content:flex-end; }
+  .acts form { display:inline; }
+  .linkbtn { background:none; border:none; color:#B3261E; font:inherit; font-size:13px; cursor:pointer; padding:0; }
+  details summary { cursor:pointer; font-weight:600; font-size:14px; color:#B3261E; }
+  .notice { font-size:12.5px; color:var(--muted); line-height:1.65; }
+</style>
+</head>
+<body>
+{% include "_topbar.html" %}
+<div class="page">
+{% block content %}{% endblock %}
+</div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<style>
+  .tb { background:#fff; border-bottom:1px solid var(--rule,#D4CFC5); position:relative; z-index:5; }
+  .tb-in { max-width:760px; margin:0 auto; padding:10px 24px; display:flex; align-items:center;
+           justify-content:space-between; gap:10px 16px; flex-wrap:wrap; font-family:var(--sans,system-ui,sans-serif); }
+  .tb-brand { font-weight:700; color:var(--blue,#1E3A5F); text-decoration:none; font-size:14px; letter-spacing:.02em; }
+  .tb-right { display:flex; align-items:center; gap:14px; font-size:13px; flex-wrap:wrap; }
+  .tb-hi { color:var(--muted,#7A7670); }
+  .tb-link { color:var(--ink,#1C1C1A); text-decoration:none; background:none; border:none; cursor:pointer;
+             padding:0; font:inherit; font-size:13px; font-weight:500; }
+  .tb-link:hover { color:var(--teal,#1A7A5A); }
+  .tb-help { background:#B3261E; color:#fff !important; padding:7px 14px; border-radius:7px;
+             font-weight:600; font-size:13px; text-decoration:none; }
+  .tb-help:hover { background:#8f1e18; }
+  .tb form { display:inline; }
+  .flash { max-width:760px; margin:14px auto 0; padding:0 24px; font-family:var(--sans,system-ui,sans-serif); }
+  .flash div { padding:11px 14px; border-radius:8px; font-size:13px; margin-bottom:8px; border:1px solid; line-height:1.5; }
+  .flash .ok    { background:#E4F3ED; border-color:#1A7A5A; color:#0E5C40; }
+  .flash .error { background:#FAE8E8; border-color:#9E1C1C; color:#7a1414; }
+  .flash .info  { background:#EBF0F8; border-color:#C5D5EE; color:#1E3A5F; }
+  @media print { .tb, .flash { display:none; } }
+</style>
+<nav class="tb">
+  <div class="tb-in">
+    <a class="tb-brand" href="{{ url_for('index') }}">{{ clinic_name }}</a>
+    <div class="tb-right">
+      {% if user %}
+        <span class="tb-hi">Hi, {{ user['full_name'] }}</span>
+        <a class="tb-link" href="{{ url_for('profile') }}">My profile</a>
+        <form method="post" action="{{ url_for('logout') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="tb-link" type="submit">Log out</button>
+        </form>
+      {% else %}
+        <a class="tb-link" href="{{ url_for('login') }}">Log in</a>
+        <a class="tb-link" href="{{ url_for('register') }}">Create profile</a>
+      {% endif %}
+      <a class="tb-help" href="{{ url_for('ask_help') }}" target="_blank" rel="noopener">Ask for help</a>
+    </div>
+  </div>
+</nav>
+{% with msgs = get_flashed_messages(with_categories=true) %}
+  {% if msgs %}<div class="flash">{% for cat, m in msgs %}<div class="{{ cat }}">{{ m }}</div>{% endfor %}</div>{% endif %}
+{% endwith %}

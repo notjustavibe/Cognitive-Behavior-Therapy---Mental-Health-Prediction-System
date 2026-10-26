@@ -319,11 +319,22 @@
     .lh-right { text-align: left; }
   }
 
+  /* ── Required / optional markers ── */
+  .req { color:#B3261E; font-weight:700; margin-left:3px; }
+  .opt { color:var(--muted); font-weight:400; font-size:12px; margin-left:6px; font-style:italic; }
+  .legend { font-size:12.5px; color:var(--muted); margin-bottom:18px; }
+  .banner { border:1px solid #C5D5EE; background:#EBF0F8; color:var(--blue); border-radius:var(--r);
+            padding:13px 16px; font-size:13px; line-height:1.6; margin-bottom:22px; }
+  .banner a { color:var(--blue); font-weight:600; }
+  .help-row { text-align:center; margin-top:16px; font-size:13px; color:var(--muted); }
+  .help-row a { color:#B3261E; font-weight:600; }
+
   /* ── Divider inside card ── */
   .card-divider { border: none; border-top: 1px solid var(--faint); margin: 22px 0; }
 </style>
 </head>
 <body>
+{% include "_topbar.html" %}
 
 <div class="letterhead">
   <div class="lh-inner">
@@ -352,7 +363,14 @@
 </div>
 
 <div class="wrapper">
+{% if user %}
+<div class="banner">Signed in as <strong>{{ user['full_name'] }}</strong>. This report will be saved to your profile, and your details are pre-filled below.</div>
+{% else %}
+<div class="banner">Want your reports saved? <a href="{{ url_for('register') }}">Create a profile</a> or <a href="{{ url_for('login') }}">log in</a> first. You can also continue as a guest, but guest reports are not saved.</div>
+{% endif %}
+<p class="legend"><span class="req">*</span> Required question &nbsp;·&nbsp; <span class="opt" style="margin-left:0">(optional)</span> You can skip these</p>
 <form action="/predict" method="POST" id="assessment-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
   <!-- ══ PATIENT SECTION ══ -->
   <div class="section">
@@ -367,7 +385,7 @@
     <div class="card demo-card">
 
       <div class="question">
-        <span class="q-label">Full name (appears on your report)</span>
+        <span class="q-label">Full name (appears on your report)<span class="opt">(optional)</span></span>
         <input type="text" name="patient_name" class="name-input" placeholder="e.g. Aisha Raza" autocomplete="off">
       </div>
 
@@ -375,7 +393,7 @@
 
       <div class="q-grid">
         <div class="question">
-          <span class="q-label">Gender</span>
+          <span class="q-label">Gender<span class="req" title="Required">*</span></span>
           <div class="demo-scale">
             <input type="radio" name="gender" id="gm" value="Male" required>
             <label for="gm">Male</label>
@@ -386,7 +404,7 @@
           </div>
         </div>
         <div class="question">
-          <span class="q-label">Age group</span>
+          <span class="q-label">Age group<span class="req" title="Required">*</span></span>
           <div class="demo-scale">
             <input type="radio" name="age_group" id="a1" value="Under 25" required>
             <label for="a1">Under 25</label>
@@ -404,20 +422,16 @@
 
       <div class="q-grid">
         <div class="question">
-          <span class="q-label">Country</span>
+          <span class="q-label">Country<span class="req" title="Required">*</span></span>
           <div class="select-wrap">
             <select name="country" required>
               <option value="" disabled selected>Select country</option>
-              <option>United States</option><option>United Kingdom</option>
-              <option>Canada</option><option>Germany</option>
-              <option>Netherlands</option><option>Ireland</option>
-              <option>Australia</option><option>France</option>
-              <option>India</option><option>Other</option>
+              {% for c in countries %}<option>{{ c }}</option>{% endfor %}
             </select>
           </div>
         </div>
         <div class="question">
-          <span class="q-label">Current occupation</span>
+          <span class="q-label">Current occupation<span class="req" title="Required">*</span></span>
           <div class="demo-scale" style="flex-wrap:wrap;">
             <input type="radio" name="occupation" id="oc0" value="0" required>
             <label for="oc0">Corporate</label>
@@ -437,7 +451,7 @@
 
       <div class="q-grid">
         <div class="question">
-          <span class="q-label">Family history of mental illness?</span>
+          <span class="q-label">Family history of mental illness?<span class="req" title="Required">*</span></span>
           <div class="demo-scale">
             <input type="radio" name="family_history" id="fam0" value="0" required>
             <label for="fam0">No</label>
@@ -448,7 +462,7 @@
           </div>
         </div>
         <div class="question">
-          <span class="q-label">Likelihood of seeking help if struggling?</span>
+          <span class="q-label">Likelihood of seeking help if struggling?<span class="req" title="Required">*</span></span>
           <div class="demo-scale">
             <input type="radio" name="help_seeking" id="hs1" value="1" required>
             <label for="hs1">Very likely</label>
@@ -464,7 +478,7 @@
 
       <div class="q-grid">
         <div class="question">
-          <span class="q-label">Days spent indoors recently</span>
+          <span class="q-label">Days spent indoors recently<span class="req" title="Required">*</span></span>
           <div class="demo-scale" style="flex-wrap:wrap;">
             <input type="radio" name="days_indoors_q" id="di1" value="1" required>
             <label for="di1">Go out daily</label>
@@ -479,7 +493,7 @@
           </div>
         </div>
         <div class="question">
-          <span class="q-label">General mood fluctuations</span>
+          <span class="q-label">General mood fluctuations<span class="req" title="Required">*</span></span>
           <div class="demo-scale">
             <input type="radio" name="mood_swings_q" id="ms1" value="1" required>
             <label for="ms1">Low</label>
@@ -494,7 +508,7 @@
       <hr class="card-divider">
 
       <div class="question" style="margin-bottom:0">
-        <span class="q-label">Concern about stigma regarding mental health in your environment</span>
+        <span class="q-label">Concern about stigma regarding mental health in your environment<span class="req" title="Required">*</span></span>
         <span class="q-hint">1 = no concern at all · 5 = very significant concern</span>
         <div class="scale">
           {% for i, t in [(1,'None'),(2,'Slight'),(3,'Moderate'),(4,'Notable'),(5,'Severe')] %}
@@ -522,7 +536,7 @@
     </div>
     <div class="card">
       <div class="question">
-        <span class="q-label">How often have you felt sad, empty, or hopeless?</span>
+        <span class="q-label">How often have you felt sad, empty, or hopeless?<span class="req" title="Required">*</span></span>
         <span class="q-hint">Reflects depressive symptom frequency</span>
         <div class="scale">
           {% for i, t in [(1,'Rarely'),(2,'Sometimes'),(3,'Often'),(4,'Very often'),(5,'Always')] %}
@@ -534,7 +548,7 @@
         </div>
       </div>
       <div class="question" style="margin-bottom:0">
-        <span class="q-label">How troubled have you been by nervousness, worry, or fear?</span>
+        <span class="q-label">How troubled have you been by nervousness, worry, or fear?<span class="req" title="Required">*</span></span>
         <span class="q-hint">Reflects anxiety symptom intensity</span>
         <div class="scale">
           {% for i, t in [(1,'Not at all'),(2,'A little'),(3,'Moderately'),(4,'Quite a bit'),(5,'Extremely')] %}
@@ -560,7 +574,7 @@
     </div>
     <div class="card">
       <div class="question">
-        <span class="q-label">How isolated or cut off from others have you felt?</span>
+        <span class="q-label">How isolated or cut off from others have you felt?<span class="req" title="Required">*</span></span>
         <div class="scale">
           {% for i, t in [(1,'Not at all'),(2,'A little'),(3,'Somewhat'),(4,'Quite a bit'),(5,'Very much')] %}
           <input type="radio" name="isolation" id="iso{{i}}" value="{{i}}" required>
@@ -571,7 +585,7 @@
         </div>
       </div>
       <div class="question">
-        <span class="q-label">How would you rate the quality of your social relationships overall?</span>
+        <span class="q-label">How would you rate the quality of your social relationships overall?<span class="req" title="Required">*</span></span>
         <span class="q-hint">Family, friends, colleagues — overall connectedness</span>
         <div class="scale">
           {% for i, t in [(1,'Very poor'),(2,'Poor'),(3,'Average'),(4,'Good'),(5,'Excellent')] %}
@@ -583,9 +597,9 @@
         </div>
       </div>
       <div class="question" style="margin-bottom:0">
-        <span class="q-label">Have you experienced discrimination or unfair treatment in your environment?</span>
+        <span class="q-label">Have you experienced discrimination or unfair treatment in your environment?<span class="opt">(optional)</span></span>
         <div class="pills">
-          <input type="radio" name="campus_discrimination" id="dis0" value="0" required>
+          <input type="radio" name="campus_discrimination" id="dis0" value="0">
           <label for="dis0">No</label>
           <input type="radio" name="campus_discrimination" id="dis1" value="1">
           <label for="dis1">Yes</label>
@@ -606,7 +620,7 @@
     </div>
     <div class="card">
       <div class="question">
-        <span class="q-label">How much pressure do you feel from your work or academic workload?</span>
+        <span class="q-label">How much pressure do you feel from your work or academic workload?<span class="req" title="Required">*</span></span>
         <div class="scale">
           {% for i, t in [(1,'Very low'),(2,'Low'),(3,'Moderate'),(4,'High'),(5,'Very high')] %}
           <input type="radio" name="academic_pressure" id="prs{{i}}" value="{{i}}" required>
@@ -617,7 +631,7 @@
         </div>
       </div>
       <div class="question">
-        <span class="q-label">How worried are you about financial concerns?</span>
+        <span class="q-label">How worried are you about financial concerns?<span class="req" title="Required">*</span></span>
         <div class="scale">
           {% for i, t in [(1,'Not worried'),(2,'A little'),(3,'Somewhat'),(4,'Very worried'),(5,'Extremely')] %}
           <input type="radio" name="financial_concerns" id="fin{{i}}" value="{{i}}" required>
@@ -628,7 +642,7 @@
         </div>
       </div>
       <div class="question" style="margin-bottom:0">
-        <span class="q-label">How satisfied are you with your academic or professional progress?</span>
+        <span class="q-label">How satisfied are you with your academic or professional progress?<span class="req" title="Required">*</span></span>
         <div class="scale">
           {% for i, t in [(1,'Very low'),(2,'Low'),(3,'Moderate'),(4,'High'),(5,'Very high')] %}
           <input type="radio" name="study_satisfaction" id="sat{{i}}" value="{{i}}" required>
@@ -653,7 +667,7 @@
     </div>
     <div class="card">
       <div class="question">
-        <span class="q-label">How uncertain or insecure do you feel about your future?</span>
+        <span class="q-label">How uncertain or insecure do you feel about your future?<span class="req" title="Required">*</span></span>
         <div class="scale">
           {% for i, t in [(1,'Very secure'),(2,'Secure'),(3,'Neutral'),(4,'Insecure'),(5,'Very insecure')] %}
           <input type="radio" name="future_insecurity" id="fut{{i}}" value="{{i}}" required>
@@ -666,9 +680,9 @@
       <hr class="card-divider">
       <div class="q-grid">
         <div class="question" style="margin-bottom:0">
-          <span class="q-label">Average hours of sleep per night</span>
+          <span class="q-label">Average hours of sleep per night<span class="opt">(optional)</span></span>
           <div class="pills">
-            <input type="radio" name="average_sleep" id="slp1" value="1" required>
+            <input type="radio" name="average_sleep" id="slp1" value="1">
             <label for="slp1">2–4 hrs</label>
             <input type="radio" name="average_sleep" id="slp2" value="2">
             <label for="slp2">4–6 hrs</label>
@@ -677,9 +691,9 @@
           </div>
         </div>
         <div class="question" style="margin-bottom:0">
-          <span class="q-label">Physical activity sessions per week</span>
+          <span class="q-label">Physical activity sessions per week<span class="opt">(optional)</span></span>
           <div class="pills">
-            <input type="radio" name="sports_engagement" id="spt1" value="1" required>
+            <input type="radio" name="sports_engagement" id="spt1" value="1">
             <label for="spt1">None</label>
             <input type="radio" name="sports_engagement" id="spt2" value="2">
             <label for="spt2">1–3×</label>
@@ -705,6 +719,7 @@
       {{ clinic_name }} &nbsp;·&nbsp; For educational and demonstration purposes only<br>
       This is not a clinical diagnostic instrument and does not replace professional medical advice.
     </p>
+    <p class="help-row">Need to talk to someone? <a href="{{ url_for('ask_help') }}" target="_blank" rel="noopener">Ask for help</a> (opens an email to {{ help_email }})</p>
   </div>
 
 </form>
@@ -713,15 +728,32 @@
 <script>
   const form = document.getElementById('assessment-form');
   const progressEl = document.getElementById('progress');
-  const TOTAL = 18; // all required radio groups + optional name
+  const REQUIRED = ['gender','age_group','country','occupation','family_history','help_seeking',
+    'days_indoors_q','mood_swings_q','stigma_concern','depression','anxiety','isolation',
+    'social_relationships','academic_pressure','financial_concerns','study_satisfaction','future_insecurity'];
+  const TOTAL = REQUIRED.length;   // 17 required questions (optional ones are not counted)
 
   function updateProgress() {
     const answered = new Set();
     form.querySelectorAll('input[type=radio]:checked').forEach(r => answered.add(r.name));
     const sel = form.querySelector('select[name=country]');
     if (sel && sel.value) answered.add('country');
-    progressEl.style.width = (Math.min(answered.size, TOTAL) / TOTAL * 100) + '%';
+    const done = REQUIRED.filter(n => answered.has(n)).length;
+    progressEl.style.width = (done / TOTAL * 100) + '%';
   }
+
+  // Pre-fill from the signed-in profile
+  const PREFILL = {{ prefill|tojson }};
+  (function () {
+    if (PREFILL.patient_name) form.querySelector('[name=patient_name]').value = PREFILL.patient_name;
+    ['gender','age_group'].forEach(n => {
+      if (!PREFILL[n]) return;
+      const el = Array.from(form.querySelectorAll('input[name=' + n + ']')).find(r => r.value === PREFILL[n]);
+      if (el) el.checked = true;
+    });
+    if (PREFILL.country) form.querySelector('select[name=country]').value = PREFILL.country;
+  })();
+  updateProgress();
 
   form.addEventListener('change', updateProgress);
   form.querySelector('select').addEventListener('change', updateProgress);

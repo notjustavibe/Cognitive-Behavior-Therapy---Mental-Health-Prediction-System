@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<h1>Welcome back</h1>
+<p class="lead">Log in to see your saved reports and track how things change over time.</p>
+<div class="card">
+  <form method="post" action="{{ url_for('login') }}" autocomplete="on">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="f" for="username">Username<span class="req">*</span></label>
+    <input type="text" id="username" name="username" required autocomplete="username">
+    <label class="f" for="password">Password<span class="req">*</span></label>
+    <input type="password" id="password" name="password" required autocomplete="current-password">
+    <button class="btn wide" type="submit">Log in</button>
+  </form>
+  <p class="small">New here? <a href="{{ url_for('register') }}">Create a profile</a> &nbsp;·&nbsp; <a href="{{ url_for('index') }}">Continue as a guest</a></p>
+</div>
+{% endblock %}

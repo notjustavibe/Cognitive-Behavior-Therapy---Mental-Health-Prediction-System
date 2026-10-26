@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block title %}My profile{% endblock %}
+{% block content %}
+<h1>{{ user['full_name'] }}</h1>
+<p class="lead">@{{ user['username'] }} &nbsp;·&nbsp; Member since {{ user['created_at'][:10] }} &nbsp;·&nbsp; {{ history|length }} saved report{{ '' if history|length==1 else 's' }}</p>
+
+<div class="card">
+  <h2>Your reports</h2>
+  {% if history %}
+    {% if trend %}
+    <p class="notice" style="margin-bottom:6px">Overall score over time (0 to 10, lower is better)</p>
+    <div style="max-width:420px;margin-bottom:18px">{{ trend|safe }}</div>
+    {% endif %}
+    <div class="tablewrap">
+    <table>
+      <thead><tr><th>Date</th><th>Result</th><th>Score</th><th>Confidence</th><th></th></tr></thead>
+      <tbody>
+      {% for h in history %}
+        <tr>
+          <td>{{ h['created_at'][:16] }} UTC</td>
+          <td><span class="badge" style="background:{{ h['bg'] }};color:{{ h['color'] }}">{{ h['overall_label'] }}</span></td>
+          <td>{{ h['overall_score'] }} / 10</td>
+          <td>{{ h['confidence'] }}%</td>
+          <td><div class="acts">
+            <a class="btn ghost" style="padding:7px 14px;font-size:13px" href="{{ url_for('view_report', report_id=h['id']) }}">View</a>
+            <form method="post" action="{{ url_for('delete_report', report_id=h['id']) }}" onsubmit="return confirm('Delete this report permanently?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="linkbtn" type="submit">Delete</button>
+            </form>
+          </div></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  {% else %}
+    <p class="notice">No reports yet. Your first one will appear here.</p>
+  {% endif %}
+  <p style="margin-top:18px"><a class="btn" href="{{ url_for('index') }}">Take a new assessment</a></p>
+</div>
+
+<div class="card">
+  <h2>Your details</h2>
+  <form method="post" action="{{ url_for('profile_update') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="f" for="full_name">Full name<span class="req">*</span></label>
+    <input type="text" id="full_name" name="full_name" maxlength="80" required value="{{ user['full_name'] }}">
+    <div class="row2">
+      <div>
+        <label class="f" for="gender">Gender<span class="opt">(optional)</span></label>
+        <select id="gender" name="gender"><option value="">Skip</option>
+          {% for x in genders %}<option {{ 'selected' if user['gender']==x }}>{{ x }}</option>{% endfor %}</select>
+      </div>
+      <div>
+        <label class="f" for="age_group">Age group<span class="opt">(optional)</span></label>
+        <select id="age_group" name="age_group"><option value="">Skip</option>
+          {% for x in age_groups %}<option {{ 'selected' if user['age_group']==x }}>{{ x }}</option>{% endfor %}</select>
+      </div>
+    </div>
+    <label class="f" for="country">Country<span class="opt">(optional)</span></label>
+    <select id="country" name="country"><option value="">Skip</option>
+      {% for x in countries %}<option {{ 'selected' if user['country']==x }}>{{ x }}</option>{% endfor %}</select>
+    <button class="btn" type="submit">Save changes</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Delete my profile</h2>
+  <p class="notice" style="margin-bottom:12px">This permanently deletes your profile and every saved report. It cannot be undone.</p>
+  <details>
+    <summary>I want to delete my profile</summary>
+    <form method="post" action="{{ url_for('delete_profile') }}" style="margin-top:14px" onsubmit="return confirm('Permanently delete your profile and all reports?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label class="f" for="dpw">Confirm with your password<span class="req">*</span></label>
+      <input type="password" id="dpw" name="password" required autocomplete="current-password">
+      <button class="btn danger" type="submit">Delete everything</button>
+    </form>
+  </details>
+</div>
+{% endblock %}
